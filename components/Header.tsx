@@ -21,10 +21,19 @@ const styles = {
     marginLeft: 16,
     cursor: 'pointer',
   },
+  linkAnchor: {
+    color: 'teal',
+    display: 'block',
+    lineHeight: '160%',
+    marginRight: 23,
+  },
 }
 
 const Header = ({ email, signOut }: { email: string | null, signOut: () => void }) => (
   <div style={styles.container}>
+    <Link href="/">
+      <a style={styles.linkAnchor}>Home</a>
+    </Link>
     <div style={styles.versionsContainer}>
       <div>v{nfaDependencyVersion}</div>
       <div>Next.js v{nextDependencyVersion}</div>
