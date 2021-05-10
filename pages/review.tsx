@@ -109,7 +109,6 @@ const ReviewView = ({ coaches }: ReviewType) => {
 
             const met = Object.entries(metadata)
 
-            console.log(`metadata: ${metadata}`)
             return (
               <div style={{
                 display: 'flex',
