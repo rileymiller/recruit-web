@@ -4,6 +4,8 @@ import Header from '../components/Header'
 import DemoPageLinks from '../components/DemoPageLinks'
 import FullPageLoader from '../components/FullPageLoader'
 import getAbsoluteURL from '../utils/getAbsoluteURL'
+import { v4 as uuidv4 } from 'uuid';
+
 
 const styles = {
   content: {
@@ -14,6 +16,13 @@ const styles = {
   },
 }
 
+
+const getHeaders = (token: string): HeadersInit => ({
+  'Content-Type': 'application/json',
+  'X-Request-Id': uuidv4(),
+  'Authorization': token
+})
+
 const Demo = () => {
   const AuthUser = useAuthUser() // the user is guaranteed to be authenticated
 
@@ -23,9 +32,7 @@ const Demo = () => {
     const endpoint = getAbsoluteURL('/api/example')
     const response = await fetch(endpoint, {
       method: 'GET',
-      headers: {
-        Authorization: token,
-      },
+      headers: getHeaders(token ?? '')
     })
     const data = await response.json()
     if (!response.ok) {

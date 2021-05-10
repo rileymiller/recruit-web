@@ -1,9 +1,10 @@
 import { verifyIdToken } from 'next-firebase-auth'
 import initAuth from '../../utils/initAuth'
 
+import { NextApiRequest, NextApiResponse } from 'next'
 initAuth()
 
-const handler = async (req, res) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (!(req.headers && req.headers.authorization)) {
     return res.status(400).json({ error: 'Missing Authorization header value' })
   }
