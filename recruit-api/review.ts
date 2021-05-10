@@ -1,4 +1,2 @@
-import api from './apiConfig.json'
-
-export const REVIEW_URL = `${api.reviewBaseURL}${api.reviewEndpoint}`
+export const REVIEW_URL = `${process.env.RECRUIT_API_BASE_URL}${process.env.RECRUIT_API_REVIEW_ENDPOINT}`
 
