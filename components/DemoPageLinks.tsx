@@ -15,6 +15,7 @@ const styles = {
 }
 
 const DemoPageLinks = () => (
+
   <div style={styles.content}>
     <h4>Examples</h4>
     <div>
@@ -46,7 +47,5 @@ const DemoPageLinks = () => (
     </div>
   </div>
 )
-
-DemoPageLinks.displayName = 'DemoPageLinks'
 
 export default DemoPageLinks
