@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 
-const styles = {
+export const styles = {
   content: {
     padding: '4px 32px 32px 32px',
     background: '#eeeeee',
@@ -43,6 +43,9 @@ const DemoPageLinks = () => (
       </Link>
       <Link href="/auth-ssr">
         <a style={styles.linkAnchor}>Login page: server-rendered</a>
+      </Link>
+      <Link href="/review">
+        <a style={styles.linkAnchor}>Recruit Review</a>
       </Link>
     </div>
   </div>
