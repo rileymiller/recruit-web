@@ -44,8 +44,6 @@ const Demo = ({ coaches }: DemoType) => {
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ AuthUser, req }) => {
-
-
   const res = await fetch(recruitApi.REVIEW_URL)
   const recruitData = await res.json()
 
