@@ -25,6 +25,7 @@ type Coach = {
   profilePictureURL?: string
   lastCheckedTime: Date
   school: string
+  sport: string
   [key: string]: unknown
 }
 type ReviewType = {
@@ -82,13 +83,25 @@ const ReviewView = ({ coaches }: ReviewType) => {
             }
 
             if (a.school === b.school) {
-              if (a.coachName < b.coachName) {
+
+              if (a.sport < b.sport) {
                 return -1
               }
 
-              if (a.coachName > b.coachName) {
+              if (a.sport > b.sport) {
                 return 1
               }
+
+              if (a.sport === b.sport) {
+                if (a.coachName < b.coachName) {
+                  return -1
+                }
+
+                if (a.coachName > b.coachName) {
+                  return 1
+                }
+              }
+
             }
             return 0
           }).map(coach => {
@@ -137,7 +150,6 @@ const ReviewView = ({ coaches }: ReviewType) => {
             )
           })}
         </section>
-        <p>{JSON.stringify(coaches)}</p>
       </div>
     </div>
   )
