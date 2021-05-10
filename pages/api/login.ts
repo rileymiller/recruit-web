@@ -11,7 +11,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e)
-    return res.status(500).json({ error: 'Unexpected error.' })
+    return res.status(500).json({ error: `Unexpected error. ${e}` })
   }
   return res.status(200).json({ status: true })
 }

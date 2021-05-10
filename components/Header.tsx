@@ -23,7 +23,7 @@ const styles = {
   },
 }
 
-const Header = ({ email, signOut }) => (
+const Header = ({ email, signOut }: { email: string | null, signOut: () => void }) => (
   <div style={styles.container}>
     <div style={styles.versionsContainer}>
       <div>v{nfaDependencyVersion}</div>
