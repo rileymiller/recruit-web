@@ -18,7 +18,11 @@ const styles = {
   },
 }
 
-const Demo = ({ favoriteColor }) => {
+type DemoType = {
+  favoriteColor: string
+}
+
+const Demo = ({ favoriteColor }: DemoType) => {
   const AuthUser = useAuthUser()
   return (
     <div>
@@ -65,6 +69,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }
 })
 
-export default withAuthUser({
+export default withAuthUser<DemoType>({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
 })(Demo)

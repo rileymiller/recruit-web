@@ -12,7 +12,10 @@ const styles = {
   },
 }
 
-const Demo = ({ emailVerified }) => {
+type DemoType = {
+  emailVerified: string
+}
+const Demo = ({ emailVerified }: DemoType) => {
   const AuthUser = useAuthUser()
   return (
     <div>
@@ -97,4 +100,4 @@ export const getServerSideProps = withAuthUserSSR()(async (ctx) => {
   }
 })
 
-export default withAuthUser()(Demo)
+export default withAuthUser<DemoType>()(Demo)
