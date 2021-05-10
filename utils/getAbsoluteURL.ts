@@ -1,8 +1,9 @@
 /* globals window */
+import { IncomingMessage } from 'http'
 import { NextApiRequest } from 'next'
 
 
-const getAbsoluteURL = (url: string, req: NextApiRequest | null = null) => {
+const getAbsoluteURL = (url: string, req: IncomingMessage | null = null) => {
   let host
   if (req) {
     host = req.headers.host
