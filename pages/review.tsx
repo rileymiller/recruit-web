@@ -8,14 +8,6 @@ import {
 import * as recruitApi from '../recruit-api'
 import Header from '../components/Header'
 import Image from 'next/image'
-const styles = {
-  content: {
-    padding: 32,
-  },
-  infoTextContainer: {
-    marginBottom: 32,
-  },
-}
 
 type Coach = {
   id: string
@@ -42,16 +34,12 @@ const ReviewView = ({ coaches }: ReviewType) => {
       i++
       liS.push(
         <li key={i}
-          style={{
-            listStyleType: 'none',
-            padding: '0.25rem .5rem'
-          }}
+          className="list-none py-1.5 text-gray-600 hover:text-gray-700"
         >
-          <span style={{
-            fontWeight: 'bold'
-          }}>
+          <span
+            className="font-normal text-white bg-green-400 hover:bg-green-500 px-1 py-0.5 rounded-md">
             {key}
-          </span>: {val.toString()}
+          </span> {val.toString()}
         </li>
       )
     }
@@ -60,19 +48,16 @@ const ReviewView = ({ coaches }: ReviewType) => {
   return (
     <div>
       <Header email={AuthUser.email} signOut={AuthUser.signOut} />
-      <div style={styles.content}>
-        <div style={styles.infoTextContainer}>
+      {/* <div style={styles.content}> */}
+      <div className={'p-4'}>
+        <div className={'mb-4'}>
           <h3>Example: SSR + data fetching with ID token</h3>
           <p>
             This page requires authentication. It will do a server-side redirect
             (307) to the login page if the auth cookies are not set.
           </p>
         </div>
-        <section style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center'
-        }}>
+        <section className={`flex flex-col items-center`}>
           {coaches.sort((a, b) => {
             if (a.school < b.school) {
               return -1
@@ -107,39 +92,31 @@ const ReviewView = ({ coaches }: ReviewType) => {
           }).map(coach => {
             const { coachName, profilePictureURL, ...metadata } = coach
 
-            const met = Object.entries(metadata)
-
+            const capitalizer: { [key: string]: string } = Object.keys(metadata).reduce((acc, key) => {
+              const capKey = key.substr(0, 1).toUpperCase() + key.substr(1)
+              return {
+                ...acc, [capKey]: metadata[key]
+              }
+            }, {})
+            const sortable = Object.keys(capitalizer)
+              .sort().reduce((acc, key) => ({
+                ...acc, [key]: capitalizer[key]
+              }), {})
+            const met = Object.entries(sortable)
             return (
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                padding: '2rem',
-                boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)',
-                transition: '0.3s',
-                borderRadius: '.3rem',
-                width: '50vw'
-              }} key={coach.id}>
-                <h2>{coach.coachName}</h2>
+              <div className={`flex flex-col items-center p-6 shadow-lg transition-shadow rounded-md w-6/12`} key={coach.id}>
+                <h2 className="text-xl font-semibold text-gray-700">{coach.coachName}</h2>
                 {profilePictureURL ?
                   (
-
                     <div
-                      style={{
-                        height: '250px',
-                        width: '200px',
-                        position: 'relative'
-                      }}
+                      className={`h-60 w-52 relative m-4`}
                     >
-                      <Image src={profilePictureURL} layout="fill" objectFit="contain" quality={100} />
+                      <Image className={`rounded-lg`} src={profilePictureURL} layout="fill" objectFit="cover" quality={100} />
                     </div>
-                  ) : (<div>No Image</div>)
+                  ) : (<div className="text-m font-normal mb-4">No Image</div>)
                 }
                 <ul
-                  style={{
-                    paddingLeft: '0',
-                    alignSelf: 'flex-start'
-                  }}
+                  className="pl-0 self-start"
                 >
                   {
                     getPropList(met as [string, string | boolean][])
