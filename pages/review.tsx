@@ -104,7 +104,7 @@ const ReviewView = ({ coaches }: ReviewType) => {
               }), {})
             const met = Object.entries(sortable)
             return (
-              <div className={`flex flex-col items-center p-6 shadow-lg transition-shadow rounded-md w-6/12`} key={coach.id}>
+              <div className={`flex flex-col items-center p-6 shadow-lg transition-shadow rounded-md w-full md:w-1/2 lg:1/3`} key={coach.id}>
                 <h2 className="text-xl font-semibold text-gray-700">{coach.coachName}</h2>
                 {profilePictureURL ?
                   (
