@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   useAuthUser,
   withAuthUser,
@@ -7,7 +7,6 @@ import {
 } from 'next-firebase-auth'
 import * as recruitApi from '../recruit-api'
 import Header from '../components/Header'
-import Image from 'next/image'
 import { CoachPreview } from '../components/CoachPreview'
 
 export type Coach = {
@@ -23,6 +22,27 @@ export type Coach = {
 }
 export type ReviewType = {
   coaches: Coach[]
+}
+
+export type ProdCoachPreviewProps = {
+  scrapeCoach: Coach
+}
+
+const ProdCoachPreview = (props: ProdCoachPreviewProps) => {
+  const [coach, setCoach] = useState<Coach | undefined>(undefined)
+  useEffect(() => {
+    const fetchCoach = async () => {
+      const coach = await recruitApi.getCoach(props.scrapeCoach.id)
+      setCoach(coach)
+    }
+    if (props.scrapeCoach?.prodRecordExists) {
+      fetchCoach()
+    }
+  }, [])
+
+  return (
+    <CoachPreview coach={coach} label={`Prod`} loading={props.scrapeCoach.prodRecordExists && coach === undefined} />
+  )
 }
 
 const ReviewView = ({ coaches }: ReviewType) => {
@@ -74,7 +94,13 @@ const ReviewView = ({ coaches }: ReviewType) => {
             return 0
           }).map(coach => {
             return (
-              <CoachPreview coach={coach} />
+              <div className="flex flex-row w-full p-12">
+
+                <CoachPreview key={`scrape-${coach.id}`} coach={coach} label={`Scrape`} />
+                {
+                  <ProdCoachPreview key={`prod-preview-${coach.id}`} scrapeCoach={coach} />
+                }
+              </div>
             )
           })}
         </section>
