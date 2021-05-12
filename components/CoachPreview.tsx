@@ -53,7 +53,7 @@ const getAdminList = (properties: [string, string | boolean][]) => {
   for (const [key, val] of properties) {
     i++
     liS.push(
-      <li key={i}
+      <li key={`${i}-${key}-${val}`}
         className="list-none text-gray-600 hover:text-gray-700"
       >
         <span
@@ -75,7 +75,7 @@ const getPropList = (properties: [string, string | boolean][], diffKeys?: string
   for (const [key, val] of properties) {
     i++
     liS.push(
-      <li key={i}
+      <li key={`${i}-${key}-${val}`}
         className="list-none py-1.5 text-gray-600 hover:text-gray-700"
       >
         <span
