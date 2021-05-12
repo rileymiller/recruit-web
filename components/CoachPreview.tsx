@@ -6,6 +6,8 @@ type CoachPreviewProps = {
   coach?: Coach
   label?: string
   loading?: boolean
+  adminKeys?: string[]
+  diffKeys?: string[]
 }
 import Image from 'next/image'
 
@@ -37,17 +39,47 @@ const CoachImage = ({ profilePictureURL }: { profilePictureURL?: string }) => (
     }
   </div>
 )
-const getPropList = (properties: [string, string | boolean][]) => {
+
+const FieldHeading = ({ children }: { children: React.ReactNode }) => (
+  <div className="text-gray-700 self-start font-semibold pl-2 pb-2 pt-2 underline text-xl">
+    {children}
+  </div>
+)
+
+const getAdminList = (properties: [string, string | boolean][]) => {
   let liS = []
   let i = 0
+
   for (const [key, val] of properties) {
     i++
     liS.push(
-      <li key={i}
+      <li key={`${i}-${key}-${val}`}
+        className="list-none text-gray-600 hover:text-gray-700"
+      >
+        <span
+          className={`font-normal capitalize px-1 py-0.5`}>
+          {key}:
+        </span> {val.toString()}
+      </li>
+    )
+  }
+  return liS
+}
+
+const isDiffKey = (key: string, diffKeys: string[]) => diffKeys.includes(key)
+const getPropList = (properties: [string, string | boolean][], diffKeys?: string[]) => {
+  let liS = []
+  let i = 0
+
+
+  for (const [key, val] of properties) {
+    i++
+    liS.push(
+      <li key={`${i}-${key}-${val}`}
         className="list-none py-1.5 text-gray-600 hover:text-gray-700"
       >
         <span
-          className="font-normal text-white bg-green-400 hover:bg-green-500 px-1 py-0.5 rounded-md">
+          className={`font-normal capitalize text-white ${diffKeys && isDiffKey(key, diffKeys) ? 'bg-yellow-400' : 'bg-green-400'} px-1 py-0.5 rounded-md`}>
           {key}
         </span> {val.toString()}
       </li>
@@ -60,17 +92,22 @@ export const CoachPreview = (props: CoachPreviewProps) => {
   if (props.coach) {
 
     const { coachName, profilePictureURL, ...metadata } = props.coach
-    const capitalizer: { [key: string]: string } = Object.keys(metadata).reduce((acc, key) => {
-      const capKey = key.substr(0, 1).toUpperCase() + key.substr(1)
-      return {
-        ...acc, [capKey]: metadata[key]
-      }
+
+    const admin = Object.keys(metadata).reduce((acc, key) => {
+      return props.adminKeys?.includes(key) ? {
+        ...acc, [key]: metadata[key]
+      } : acc
     }, {})
-    const sortable = Object.keys(capitalizer)
-      .sort().reduce((acc, key) => ({
-        ...acc, [key]: capitalizer[key]
-      }), {})
-    const met = Object.entries(sortable)
+
+    const prunedMetadata = Object.keys(metadata).reduce((acc, key) => {
+      return !props.adminKeys?.includes(key) ? {
+        ...acc, [key]: metadata[key]
+      } : acc
+    }, {})
+
+    const met = Object.entries(prunedMetadata)
+    const adminEntries = Object.entries(admin)
+
     return (
       <CoachCard>
         {props.label ?
@@ -81,14 +118,24 @@ export const CoachPreview = (props: CoachPreviewProps) => {
           {props.coach.coachName}
         </CoachName>
         <CoachImage profilePictureURL={props.coach.profilePictureURL} />
+        <FieldHeading>
+          Admin
+        </FieldHeading>
+        <ul
+          className="pl-0 self-start"
+        >
+          {getAdminList(adminEntries as [string, string | boolean][])}
+        </ul>
+        <FieldHeading>
+          Metadata
+        </FieldHeading>
         <ul
           className="pl-0 self-start"
         >
           {
-            getPropList(met as [string, string | boolean][])
+            getPropList(met as [string, string | boolean][], props.diffKeys)
           }
         </ul>
-        {/* </div> */}
       </CoachCard>
     )
   } else if (props.loading) {
