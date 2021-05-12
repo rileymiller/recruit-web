@@ -36,7 +36,6 @@ const ProdCoachPreview = (props: ProdCoachPreviewProps) => {
       setCoach(coach)
     }
     if (props.scrapeCoach?.prodRecordExists) {
-      console.log(`prodRecordExists`)
       fetchCoach()
     }
   }, [])
