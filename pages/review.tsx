@@ -118,9 +118,9 @@ const CoachReviewPanel = ({ coach }: { coach: Coach }) => {
   }, [])
 
   return (
-    <div key={`row-${coach.id}`} className="flex flex-row w-full p-12">
-      <CoachPreview key={`row-${coach.id}`} coach={coach} label={`Scrape`} diffKeys={diffKeys} adminKeys={Object.keys(scrapeAdmin)} />
-      <CoachPreview key={`prod-row-${prodCoach?.id}`} coach={prodCoach} label={`Prod`} loading={coach.prodRecordExists && prodCoach === undefined} adminKeys={prodAdminKeys} />
+    <div className="flex flex-row w-full p-12">
+      <CoachPreview coach={coach} label={`Scrape`} diffKeys={diffKeys} adminKeys={Object.keys(scrapeAdmin)} />
+      <CoachPreview coach={prodCoach} label={`Prod`} loading={coach.prodRecordExists && prodCoach === undefined} adminKeys={prodAdminKeys} />
     </div>
   )
 }

@@ -66,11 +66,11 @@ const getAdminList = (properties: [string, string | boolean][]) => {
   return liS
 }
 
+const isDiffKey = (key: string, diffKeys: string[]) => diffKeys.includes(key)
 const getPropList = (properties: [string, string | boolean][], diffKeys?: string[]) => {
   let liS = []
   let i = 0
 
-  const isDiffKey = (key: string) => diffKeys?.includes(key)
 
   for (const [key, val] of properties) {
     i++
@@ -79,7 +79,7 @@ const getPropList = (properties: [string, string | boolean][], diffKeys?: string
         className="list-none py-1.5 text-gray-600 hover:text-gray-700"
       >
         <span
-          className={`font-normal capitalize text-white ${isDiffKey(key) ? 'bg-yellow-400 hover:bg-yellow-500' : 'bg-green-400 hover:bg-green-500'} px-1 py-0.5 rounded-md`}>
+          className={`font-normal capitalize text-white ${diffKeys && isDiffKey(key, diffKeys) ? 'bg-yellow-400 hover:bg-yellow-500' : 'bg-green-400 hover:bg-green-500'} px-1 py-0.5 rounded-md`}>
           {key}
         </span> {val.toString()}
       </li>
