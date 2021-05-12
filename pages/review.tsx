@@ -15,9 +15,10 @@ export type Coach = {
   needsReview: boolean
   prodRecordExists: boolean
   profilePictureURL?: string
-  lastCheckedTime: Date
+  lastCheckedTime: string
   school: string
   sport: string
+  runID: string
   [key: string]: unknown
 }
 export type ReviewType = {
@@ -28,20 +29,99 @@ export type ProdCoachPreviewProps = {
   scrapeCoach: Coach
 }
 
-const ProdCoachPreview = (props: ProdCoachPreviewProps) => {
-  const [coach, setCoach] = useState<Coach | undefined>(undefined)
+type CoachMetadata = {
+  [key: string]: unknown
+}
+
+const diffMetadata = (scrapeMetadata: CoachMetadata, prodMetadata: CoachMetadata) => {
+  let modifiedKeys: string[] = []
+
+  Object.keys(scrapeMetadata).forEach(key => {
+    if (!prodMetadata.hasOwnProperty(key) || scrapeMetadata[key] !== prodMetadata[key]) {
+      modifiedKeys.push(key)
+    }
+  })
+
+  return modifiedKeys
+}
+
+export type ScrapeAdmin = Pick<Coach, 'id' | 'profilePictureURL' | 'runID' | 'lastCheckedTime' | 'needsReview' | 'prodRecordExists'>
+
+const getScrapeMetadata = (coach: Coach) => {
+  const {
+    id,
+    profilePictureURL,
+    runID,
+    lastCheckedTime,
+    needsReview,
+    prodRecordExists,
+    ...scrapeMetadata } = coach
+
+  const scrapeAdmin: ScrapeAdmin = {
+    id,
+    profilePictureURL,
+    runID,
+    lastCheckedTime,
+    needsReview,
+    prodRecordExists,
+  }
+
+  return { scrapeAdmin, scrapeMetadata }
+}
+
+export type ProdAdmin = Pick<Coach, 'id' | 'profilePictureURL' | 'runID' | 'lastCheckedTime'> & {
+  Twitter: string
+}
+
+const getProdMetadata = (coach: Coach) => {
+  const {
+    id,
+    profilePictureURL,
+    runID,
+    lastCheckedTime,
+    ['Twitter']: Twitter,
+    ...prodMetadata } = coach
+
+  const prodAdmin = {
+    id,
+    profilePictureURL,
+    runID,
+    lastCheckedTime,
+    Twitter
+  }
+  return { prodAdmin, prodMetadata }
+}
+
+const CoachReviewPanel = ({ coach }: { coach: Coach }) => {
+  const [prodCoach, setProdCoach] = useState<Coach | undefined>(undefined)
+  const [diffKeys, setDiffKeys] = useState<string[] | undefined>(undefined)
+  const [prodAdminKeys, setProdAdminKeys] = useState<string[] | undefined>(undefined)
+
+  const { scrapeAdmin, scrapeMetadata } = getScrapeMetadata(coach)
+
   useEffect(() => {
     const fetchCoach = async () => {
-      const coach = await recruitApi.getCoach(props.scrapeCoach.id)
-      setCoach(coach)
+      const prodCoachResponse = await recruitApi.getCoach(coach.id)
+      setProdCoach(prodCoachResponse)
+
+
+      const { prodAdmin, prodMetadata } = getProdMetadata(prodCoachResponse)
+
+      const metadataDiffKeys = diffMetadata(scrapeMetadata, prodMetadata)
+
+      setDiffKeys(metadataDiffKeys)
+      setProdAdminKeys(Object.keys(prodAdmin))
     }
-    if (props.scrapeCoach?.prodRecordExists) {
+    if (coach.prodRecordExists) {
       fetchCoach()
     }
   }, [])
 
   return (
-    <CoachPreview coach={coach} label={`Prod`} loading={props.scrapeCoach.prodRecordExists && coach === undefined} />
+    <div className="flex flex-row w-full p-12">
+      <CoachPreview coach={coach} label={`Scrape`} diffKeys={diffKeys} adminKeys={Object.keys(scrapeAdmin)} />
+      <CoachPreview coach={prodCoach} label={`Prod`} loading={coach.prodRecordExists && prodCoach === undefined} adminKeys={prodAdminKeys} />
+    </div>
   )
 }
 
@@ -51,7 +131,6 @@ const ReviewView = ({ coaches }: ReviewType) => {
   return (
     <div>
       <Header email={AuthUser.email} signOut={AuthUser.signOut} />
-      {/* <div style={styles.content}> */}
       <div className={'p-4'}>
         <div className={'mb-4'}>
           <h3>Example: SSR + data fetching with ID token</h3>
@@ -94,13 +173,7 @@ const ReviewView = ({ coaches }: ReviewType) => {
             return 0
           }).map(coach => {
             return (
-              <div className="flex flex-row w-full p-12">
-
-                <CoachPreview key={`scrape-${coach.id}`} coach={coach} label={`Scrape`} />
-                {
-                  <ProdCoachPreview key={`prod-preview-${coach.id}`} scrapeCoach={coach} />
-                }
-              </div>
+              <CoachReviewPanel coach={coach} />
             )
           })}
         </section>
