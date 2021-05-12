@@ -79,7 +79,7 @@ const getPropList = (properties: [string, string | boolean][], diffKeys?: string
         className="list-none py-1.5 text-gray-600 hover:text-gray-700"
       >
         <span
-          className={`font-normal capitalize text-white ${diffKeys && isDiffKey(key, diffKeys) ? 'bg-yellow-400' : 'bg-green-400 hover:bg-green-500'} px-1 py-0.5 rounded-md`}>
+          className={`font-normal capitalize text-white ${diffKeys && isDiffKey(key, diffKeys) ? 'bg-yellow-400' : 'bg-green-400'} px-1 py-0.5 rounded-md`}>
           {key}
         </span> {val.toString()}
       </li>
