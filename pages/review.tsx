@@ -92,6 +92,8 @@ const getProdMetadata = (coach: Coach) => {
   return { prodAdmin, prodMetadata }
 }
 
+
+
 const CoachReviewPanel = ({ coach }: { coach: Coach }) => {
   const [prodCoach, setProdCoach] = useState<Coach | undefined>(undefined)
   const [diffKeys, setDiffKeys] = useState<string[] | undefined>(undefined)
@@ -104,13 +106,22 @@ const CoachReviewPanel = ({ coach }: { coach: Coach }) => {
       const prodCoachResponse = await recruitApi.getCoach(coach.id)
       setProdCoach(prodCoachResponse)
 
-
       const { prodAdmin, prodMetadata } = getProdMetadata(prodCoachResponse)
 
       const metadataDiffKeys = diffMetadata(scrapeMetadata, prodMetadata)
 
       setDiffKeys(metadataDiffKeys)
       setProdAdminKeys(Object.keys(prodAdmin))
+
+      // split out coach name, profilepicture, admin metadata
+
+      // pass in metadata with:
+      // - key
+      // - value
+      // - differentFromProd
+      // - checked
+      // - onChange
+
     }
     if (coach.prodRecordExists) {
       fetchCoach()
