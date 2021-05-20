@@ -83,7 +83,11 @@ const initMetadataProperties = (props: [string, string | boolean][]) => props.ma
   checked: true
 }))
 
-const MetadataWizard = ({ properties, diffKeys }: { properties: [string, string | boolean][], diffKeys?: string[] }) => {
+const MetadataWizard = ({ properties, diffKeys, onUpdate }: {
+  properties: [string, string | boolean][],
+  diffKeys?: string[],
+  onUpdate?: (keys: string[]) => void
+}) => {
   const [selectedProperties, setSelectedProperties] = useState(initMetadataProperties(properties) ?? [])
 
   const handleClick = (prop: {
@@ -118,20 +122,18 @@ const MetadataWizard = ({ properties, diffKeys }: { properties: [string, string 
           />
         )
       })}
-      <button onClick={() => console.log(`click it ${JSON.stringify(selectedProperties)}`)} >
+      <button onClick={() => {
+        console.log(`click it ${JSON.stringify(selectedProperties)}`)
+        if (onUpdate) {
+          onUpdate(selectedProperties.filter(prop => prop.checked).map(prop => prop.key) ?? [])
+        }
+      }} >
         Submit
       </button>
     </>
   )
 }
 
-type CoachPreviewProps = {
-  coach?: Coach
-  label?: string
-  loading?: boolean
-  adminKeys?: string[]
-  diffKeys?: string[]
-}
 
 type BasicMetadataItem = {
   key: string
@@ -143,12 +145,13 @@ type ScrapeMetadataItem = BasicMetadataItem & {
   onChange: () => void
 }
 
-type CoachPreview = {
-  coachName?: string
-  profilePictureURL?: string
-  adminMetadata?: {
-    [key: string]: string
-  }
+type CoachPreviewProps = {
+  coach?: Coach
+  label?: string
+  loading?: boolean
+  adminKeys?: string[]
+  diffKeys?: string[]
+  onUpdate?: (keys: string[]) => void
 }
 
 export const CoachPreview = (props: CoachPreviewProps) => {
@@ -198,6 +201,7 @@ export const CoachPreview = (props: CoachPreviewProps) => {
           {metadataEntries ? <MetadataWizard
             properties={metadataEntries as [string, string | boolean][]}
             diffKeys={props.diffKeys}
+            onUpdate={props.onUpdate}
           /> : null
           }
         </ul>
