@@ -1,14 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { Coach } from '../pages/review'
 
-type CoachPreviewProps = {
-  coach?: Coach
-  label?: string
-  loading?: boolean
-  adminKeys?: string[]
-  diffKeys?: string[]
-}
 import Image from 'next/image'
 
 const CoachCard = ({ children }: { children: React.ReactNode }) => (
@@ -67,25 +60,98 @@ const getAdminList = (properties: [string, string | boolean][]) => {
 }
 
 const isDiffKey = (key: string, diffKeys: string[]) => diffKeys.includes(key)
-const getPropList = (properties: [string, string | boolean][], diffKeys?: string[]) => {
-  let liS = []
-  let i = 0
 
+const MetadataListItem = ({ label, value, checked, isDifferent, onChange }:
+  { label: string, value: string | boolean, checked: boolean, isDifferent: boolean, onChange: () => void }) => {
 
-  for (const [key, val] of properties) {
-    i++
-    liS.push(
-      <li key={`${i}-${key}-${val}`}
-        className="list-none py-1.5 text-gray-600 hover:text-gray-700"
-      >
-        <span
-          className={`font-normal capitalize text-white ${diffKeys && isDiffKey(key, diffKeys) ? 'bg-yellow-400' : 'bg-green-400'} px-1 py-0.5 rounded-md`}>
-          {key}
-        </span> {val.toString()}
-      </li>
-    )
+  return (
+    <li key={`${label}-${value}`}
+      className="list-none py-1.5 text-gray-600 hover:text-gray-700"
+    >
+      <input key={label} type="checkbox" value={value.toString()} onChange={onChange} checked={checked} />
+      <span
+        className={`ml-4 font-normal capitalize text-white ${isDifferent ? 'bg-yellow-400' : 'bg-green-400'} px-1 py-0.5 rounded-md`}>
+        {label}
+      </span> {value.toString()}
+    </li>
+  )
+}
+
+const initMetadataProperties = (props: [string, string | boolean][]) => props.map(att => ({
+  key: att[0],
+  value: att[1],
+  checked: true
+}))
+
+const MetadataWizard = ({ properties, diffKeys, onUpdate }: {
+  properties: [string, string | boolean][],
+  diffKeys?: string[],
+  onUpdate?: (keys: string[]) => void
+}) => {
+  const [selectedProperties, setSelectedProperties] = useState(initMetadataProperties(properties) ?? [])
+
+  const handleClick = (prop: {
+    key: string
+    value: string | boolean
+    checked: boolean
+  }) => {
+    const modProps = selectedProperties.map(iter => {
+      if (iter.key.toString() === prop.key.toString()) {
+        return {
+          ...prop,
+          checked: !prop.checked
+        }
+      }
+      return iter
+    })
+
+    setSelectedProperties(modProps)
   }
-  return liS
+
+  return (
+    <>
+      {selectedProperties.map((prop, i) => {
+        return (
+          <MetadataListItem
+            key={`${i}-${prop.key}`}
+            label={prop.key}
+            value={prop.value}
+            checked={prop.checked}
+            isDifferent={(diffKeys && isDiffKey(prop.key, diffKeys)) ?? false}
+            onChange={() => handleClick(prop)}
+          />
+        )
+      })}
+      <button onClick={() => {
+        console.log(`click it ${JSON.stringify(selectedProperties)}`)
+        if (onUpdate) {
+          onUpdate(selectedProperties.filter(prop => prop.checked).map(prop => prop.key) ?? [])
+        }
+      }} >
+        Submit
+      </button>
+    </>
+  )
+}
+
+
+type BasicMetadataItem = {
+  key: string
+  value: string
+}
+
+type ScrapeMetadataItem = BasicMetadataItem & {
+  checked: boolean
+  onChange: () => void
+}
+
+type CoachPreviewProps = {
+  coach?: Coach
+  label?: string
+  loading?: boolean
+  adminKeys?: string[]
+  diffKeys?: string[]
+  onUpdate?: (keys: string[]) => void
 }
 
 export const CoachPreview = (props: CoachPreviewProps) => {
@@ -105,7 +171,7 @@ export const CoachPreview = (props: CoachPreviewProps) => {
       } : acc
     }, {})
 
-    const met = Object.entries(prunedMetadata)
+    const metadataEntries = Object.entries(prunedMetadata)
     const adminEntries = Object.entries(admin)
 
     return (
@@ -132,8 +198,11 @@ export const CoachPreview = (props: CoachPreviewProps) => {
         <ul
           className="pl-0 self-start"
         >
-          {
-            getPropList(met as [string, string | boolean][], props.diffKeys)
+          {metadataEntries ? <MetadataWizard
+            properties={metadataEntries as [string, string | boolean][]}
+            diffKeys={props.diffKeys}
+            onUpdate={props.onUpdate}
+          /> : null
           }
         </ul>
       </CoachCard>

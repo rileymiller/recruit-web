@@ -92,6 +92,8 @@ const getProdMetadata = (coach: Coach) => {
   return { prodAdmin, prodMetadata }
 }
 
+
+
 const CoachReviewPanel = ({ coach }: { coach: Coach }) => {
   const [prodCoach, setProdCoach] = useState<Coach | undefined>(undefined)
   const [diffKeys, setDiffKeys] = useState<string[] | undefined>(undefined)
@@ -99,11 +101,26 @@ const CoachReviewPanel = ({ coach }: { coach: Coach }) => {
 
   const { scrapeAdmin, scrapeMetadata } = getScrapeMetadata(coach)
 
+  const handleUpdate = (metaUpdateKeys: string[]) => {
+    console.log(`metaUpdateKeys: ${JSON.stringify(metaUpdateKeys)}`)
+
+    const newMeta = Object.keys(scrapeMetadata)
+      .filter(key => metaUpdateKeys.includes(key))
+      .reduce((att, key) => {
+
+        return {
+          ...att,
+          [key]: scrapeMetadata[key]
+        }
+      }, {})
+
+    console.log(`newMeta: ${JSON.stringify(newMeta)}`)
+  }
+
   useEffect(() => {
     const fetchCoach = async () => {
       const prodCoachResponse = await recruitApi.getCoach(coach.id)
       setProdCoach(prodCoachResponse)
-
 
       const { prodAdmin, prodMetadata } = getProdMetadata(prodCoachResponse)
 
@@ -119,7 +136,7 @@ const CoachReviewPanel = ({ coach }: { coach: Coach }) => {
 
   return (
     <div className="flex flex-row w-full p-12">
-      <CoachPreview coach={coach} label={`Scrape`} diffKeys={diffKeys} adminKeys={Object.keys(scrapeAdmin)} />
+      <CoachPreview coach={coach} label={`Scrape`} diffKeys={diffKeys} adminKeys={Object.keys(scrapeAdmin)} onUpdate={handleUpdate} />
       <CoachPreview coach={prodCoach} label={`Prod`} loading={coach.prodRecordExists && prodCoach === undefined} adminKeys={prodAdminKeys} />
     </div>
   )
